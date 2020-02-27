@@ -1,0 +1,1034 @@
+
+<!doctype html>
+<html lang="en-GB">
+	<head>
+		<title>squarespace 2</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="s q u a r e s p a c e t w o"/>
+		<meta name="" content=""/>
+		<meta property="og:image" content="/512x512.png">
+		<meta name="theme-color" content="#000000">
+		<!-- <script src="/audiocontext.js"></script> -->
+		<script src="https://cwilso.github.io/webkitAudioContext-MonkeyPatch/webkitAudioContextMonkeyPatch.js"></script>
+		<script src="./upup.min.js"></script>
+		<script src="StartAudioContext.js"></script>
+		<link rel="manifest" href="manifest.json">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta content="yes" name="apple-touch-fullscreen" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="icon" type="image/png" href="/512x512.png" />
+
+		<style>
+			* {
+				touch-action: manipulation;
+			}
+
+			a {
+				color: inherit !important;
+			}
+
+			*[hidden] {display: none;}
+			.menu h1 {
+				font-size: 2.6em;
+				overflow: hidden;
+				word-wrap: none;
+				margin-top: 1em;
+				animation: bounce 1s infinite alternate;
+
+				width: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+
+	/* display: none; */
+			}
+
+			@keyframes bounce {
+				from {
+					letter-spacing: 0em;
+				}
+
+				to {
+					letter-spacing: 0.5em;
+				}
+			}
+
+			.menu small {
+				margin-bottom: 1em;
+			}
+
+			total {
+				margin-bottom: 1em;
+			}
+
+			.menu {
+				background: black;
+				color: white;
+				font-family: monospace;
+				display: flex;
+				flex-flow: column nowrap;
+				justify-content: center;
+				align-items: center;
+				/* border: solid #222 1em; */
+				padding: 1em 0;
+				position: fixed;
+				z-index: 2;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+
+				transition: all 0.3s;
+				visibility: visible;
+				transform: scale(1);
+				opacity: 1;
+			}
+
+			.menu[hidden] {
+				visibility: hidden;
+				transform: scale(1.2);
+				opacity: 0;
+			}
+
+			.buttons {
+				margin: auto;
+			}
+
+			button {
+				margin: 0.25em auto;
+				font-size: 1.5em;
+				font-family: inherit;
+				border: solid thin white;
+				color: white;
+				background: black;
+				display: block;
+				padding: 0.2em 0.5em;
+				cursor: pointer;
+			}
+
+			button + button {
+				margin-top: 0.5em;
+			}
+
+			button:first-child {
+				font-size: 2em;
+			}
+
+			aside {
+				color: white;
+			}
+
+			body {
+				font-family: monospace;
+			}
+
+			.game-area {
+				height: 100%;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				flex-flow: column nowrap;
+				padding: 1em;
+			}
+
+			:root {
+				--game-ui-height: 5em;
+			}
+
+			canvas {
+				touch-action: none;
+				/* touch-action: none; */
+				height: calc(100% - var(--game-ui-height));
+				/* width: 100%; */
+				/* object-fit: contain; */
+				/* display: table-cell;
+				height: auto;
+				width: 100%; */
+			}
+
+			aside {
+				/* touch-action: none; */
+				align-content: center;
+				height: var(--game-ui-height);
+				width: 100%;
+				padding: 0 0.5em;
+				display: grid;
+				/* grid-template-columns: auto auto; */
+				grid-template-rows: auto auto;
+			}
+
+			aside h1 {
+				grid-row: 1;
+				margin: 0;
+			}
+
+			aside h2 {
+				grid-row: 2;
+				margin: 0;
+			}
+
+			#sound {
+				display: none;
+			}
+
+			.sound-icon {
+				cursor: pointer;
+				opacity: 0.5;
+				transition: 0.15s all;
+				height: 1em;
+				fill: white;
+				display: flex;
+				flex-flow: row nowrap;
+				justify-content: center;
+				font-size: 3em;
+				transition: all 0.15s;
+			}
+
+			.sound-svg {
+				height: 1em;
+				fill: white;
+				display: block;
+				transform: translateX(.1em);
+				transition: all 0.15s;
+			}
+
+			#sound:checked + .sound-icon {
+				opacity: 1;
+			}
+
+			#sound:checked + .sound-icon .sound-svg {
+				transform: translateX(-.1em);
+			}
+
+			#sound:checked + .sound-icon .sound-wave {
+				transform: translateX(.1em);
+				opacity: 1;
+			}
+
+			label {
+				margin-bottom: 1em;
+			}
+
+			.sound-wave {
+				border: solid 0.1em transparent;
+				border-right-color: white;
+				height: 1em;
+				width: 1em;
+				border-radius: 50%;
+				position: relative;
+				left: -0.75em;
+				opacity: 0;
+				transition: all 0.15s;
+			}
+
+			.start {
+
+			}
+
+		</style>
+	</head>
+	<body>
+		<div class="yeet"></div>
+
+		<div class="menu">
+			<h1>squarespacetwo</h1>
+
+			<div class="buttons">
+				<button class="start" type="button" hidden>continue</button>
+				<button class="anew" type="button">start at level 1</button>
+				<button class="a2hs" type="button" hidden>add to homescreen</button>
+			</div>
+
+			<label>
+				<input type="checkbox" name="sound" id="sound" checked />
+					<div class="sound-icon">
+						<svg class="sound-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><path d="M256 88.017v335.964c0 21.438-25.943 31.998-40.971 16.971L126.059 352H24c-13.255 0-24-10.745-24-24V184c0-13.255 10.745-24 24-24h102.059l88.971-88.954c15.01-15.01 40.97-4.49 40.97 16.971z"/></svg>
+						<div class="sound-wave"></div>
+					</div>
+			</label>
+
+			<small>written by <a href="http://xenxier.com" target="noopener">benjamin gwynn</a> 2019</small>
+
+		</div>
+		<div class="game-area">
+			<canvas></canvas>
+			<aside>
+				<h1>level</h1>
+				<h2 game-ui-stat="level">0</h2>
+
+				<!-- <h1>size</h1>
+				<h2 game-ui-stat="size">0</h2> -->
+
+				<h1>time</h1>
+				<h2 game-ui-stat="time">0</h2>
+
+				<h1>best</h1>
+				<h2 game-ui-stat="record">0</h2>
+
+				<h1>remaining</h1>
+				<h2 game-ui-stat="count">0</h2>
+
+				<!-- <h1>squares left</h1>
+				<h2 game-ui-stat="squares-left">0</h2> -->
+			</aside>
+		</div>
+		<div class="win" hidden>
+			<!-- <h1>you done a win</h1> -->
+			<!-- <p>well done - press anywhere for next level</p> -->
+			<button class="win__next" type="button">next level</button>
+			<button class="win__replay" type="button">replay level</button>
+		</div>
+		<div class="game-end" hidden>
+			<h1>game over</h1>
+			<table>
+
+			</table>
+			<div class="total">${total}</div>
+			<button class="anew" type="button">new game</button>
+		</div>
+		<style>
+			.game-end {
+				position: fixed;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				z-index: 4;
+				color: white;
+				background: rgba(0,0,0,0.6);
+
+				display: flex;
+				flex-flow: column nowrap;
+				z-index: 1;
+				color: white;
+				text-shadow: 0 0 1.1em black;
+				transition: all 0.15s;
+
+				justify-content: center;
+				align-items: center;
+				opacity: 1;
+				transform: none;
+				visibility: visible;
+			}
+
+			.game-end[hidden] {
+				opacity: 0;
+				transform: scale(1.1);
+				visibility: hidden;
+			}
+
+			* {
+				outline: 0;
+				box-sizing: border-box;
+				-webkit-tap-highlight-color: rgba(0,0,0,0);
+				-webkit-tap-highlight-color: transparent;
+			}
+
+			h1, h2, h3, h4, h5, h6, p, span {
+				user-select: none;
+				-webkit-user-select: none;
+			}
+
+			main {
+				width: 100%;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.yeet {
+				position: fixed;
+				z-index: -1;
+				right: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				width: 150vw;
+				height: 150vw;
+				filter: (blur(50%));
+				/* background-image: linear-gradient(royalblue, pink, orange, white); */
+				/* background-image: url("asset.jpg"); */
+				animation: spin 10s infinite linear;
+				transform-origin: center;
+				overflow: hidden;
+			}
+
+			@keyframes spin {
+				from {transform: rotate(0deg) scale(3.14)}
+				to {transform: rotate(360deg) scale(3.14)}
+			}
+
+			html, body {
+				margin: 0;
+				overflow: hidden;
+				width: 100%;
+				height: 100%;
+				background: black;
+			}
+
+			/* main {
+				outline: solid white 0.05em;
+			} */
+
+			canvas {
+				object-fit: contain;
+				/* flex: auto 0 0;
+				display: block; */
+
+				transition: all 0.3s;
+				z-index: 0;
+				touch-action: none;
+				/* border: solid black 0.8em; */
+				image-rendering: optimizeSpeed;             /* STOP SMOOTHING, GIVE ME SPEED  */
+				image-rendering: -moz-crisp-edges;          /* Firefox                        */
+				image-rendering: -o-crisp-edges;            /* Opera                          */
+				image-rendering: -webkit-optimize-contrast; /* Chrome (and eventually Safari) */
+				image-rendering: pixelated; /* Chrome */
+				image-rendering: optimize-contrast;         /* CSS3 Proposed                  */
+				-ms-interpolation-mode: nearest-neighbor;   /* IE8+                           */
+			}
+
+			.win {
+				font-size: 2em;
+				position: absolute;
+				display: flex;
+				flex-flow: column nowrap;
+				z-index: 1;
+				color: white;
+				text-shadow: 0 0 1.1em black;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				justify-content: center;
+				align-items: center;
+				overflow: hidden;
+				width: 100%;
+				height: 100%;
+				line-height: 0;
+				cursor: pointer;
+				transition: all 0.15s;
+				/* touch-action: none; */
+
+				opacity: 1;
+				transform: scale(1);
+				visibility: visible;
+			}
+
+			.win[hidden] {
+				opacity: 0;
+				transform: scale(0.8);
+				visibility: hidden;
+			}
+
+			canvas[wide] {
+				height: initial;
+				width: 100%;
+				margin-bottom: auto;
+				margin-top: auto;
+			}
+
+			table {
+				width: 100%;
+				max-width: 30rem;
+
+				font-size: 1.5em;
+				text-align: right;
+			}
+
+			td:first-child, th:first-child {
+				text-align: left;
+			}
+
+			.total {
+				width: 100%;
+				max-width: 30rem;
+				font-size: 3em;
+				text-align: right;
+				font-weight: bold;
+				margin: 0.4em 0;
+				color: lightyellow;
+			}
+		</style>
+		<script>
+		(function () {
+			"use strict"
+
+			try {
+				function updateUIStat (statName, value) {
+					document.querySelector(`[game-ui-stat="${statName}"]`).innerHTML = value
+				}
+
+
+				let rects = []
+				let paused = true
+				let tStart
+				const $canvas = document.querySelector("canvas")
+				const size = 1 // / devicePixelRatio
+				const ctx = $canvas.getContext("2d")
+				let level = 0
+				const levels = [{w: 5, h:5}, {w:10 ,h:8}, {w: 2, h: 20}, {w: 10, h:4}, {w: 16, h: 16}]
+				let plotMode
+				let time
+
+				let audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+				let allowSound = true
+				const PLOT_MODE_RES = 20 /// window.devicePixelRatio
+
+				let firstX, firstY
+
+				ctx.globalAlpha = 0.7
+
+				function sleep (ms) {
+					return new Promise(resolve => setTimeout(resolve, ms))
+				}
+
+				async function makeWinNoise () {
+					if (!document.querySelector(`input[name="sound"]`).checked) return
+					const step = 0.1
+					const notes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+					for (let i = 0; i < notes.length; i++) {
+						const note = notes[i]
+						let oscillator = audioCtx.createOscillator()
+
+						oscillator.frequency.value = 440 * 1.0959 * note
+
+						oscillator.connect(audioCtx.destination)
+						oscillator.start()
+						oscillator.stop(audioCtx.currentTime + step)
+						await sleep(step * 1000)
+					}
+				}
+
+				function createSound () {
+					if (!document.querySelector(`input[name="sound"]`).checked) return
+					if (allowSound) {
+						allowSound = false
+						setTimeout(() => allowSound=true, 100)
+						const oscillator = audioCtx.createOscillator()
+
+						oscillator.frequency.value = 400 + (Math.random() * 350)
+
+						oscillator.connect(audioCtx.destination)
+						oscillator.start()
+						oscillator.stop(audioCtx.currentTime + 0.1)
+					}
+				}
+
+				function updateSquareStats () {
+					const s = (levels[level].w * levels[level].h)
+					updateUIStat("count", rects.length + "/" + s + " (" + (s-rects.length) + ")")
+					// updateUIStat("size", (levels[level].w * levels[level].h) + " (" + levels[level].w + "x" + levels[level].h + ")")
+					// updateUIStat("count", rects.length)
+				}
+
+				function newRect (x, y) {
+					if (x < 0 || x >= $canvas.width || y <0 || y >= $canvas.height) return false // do not add things out of range
+					const min = 50
+					rects.push({
+						x,
+						y,
+						r: Math.floor(Math.random() * (255 - min)) + min,
+						g: Math.floor(Math.random() * (255 - min)) + min,
+						b: Math.floor(Math.random() * (255 - min)) + min,
+						a: (Math.random() * (1 - minAlpha)) + minAlpha,
+					})
+					createSound()
+					updateSquareStats()
+					return true
+				}
+
+				function isRectHere(x, y) {
+					for (let i = 0; i < rects.length; i++) {
+						if (rects[i].x === x && rects[i].y === y) return true
+					}
+				}
+
+				function winConditionCheck () {
+					// console.log(rects)
+					for (let x = 0; x < $canvas.width/* + size*/; x += size) {
+						for (let y = 0; y < $canvas.height/*+ size*/; y += size) {
+							if (!isRectHere(x, y)) return false
+						}
+					}
+
+					console.log("win with", rects)
+
+					return true
+				}
+
+				function win () {
+					makeWinNoise()
+					paused = true
+
+					if (userTimesBest[level]) {
+						if (userTimesBest[level] > time) {
+							userTimesBest[level] = time
+						}
+					} else {
+						userTimesBest[level] = time
+					}
+
+					userTimes[level] = time
+
+					if (level + 1 === levels.length) {
+						const $end = document.querySelector(".game-end")
+						$end.removeAttribute("hidden")
+						const $table = document.querySelector(".game-end table")
+
+						let total = 0
+						$table.innerHTML = `
+								<tr>
+									<th>Level #</th>
+									<th>Size</th>
+									<th>Time</th>
+									<th>Best</th>
+								</tr>
+						`
+						for (let i = 0; i < levels.length; i++) {
+							total += parseFloat(userTimes[i])
+							$table.innerHTML += `
+								<tr>
+									<td>${i + 1}</td>
+									<td>${levels[i].w} x ${levels[i].h}</td>
+									<td>${userTimes[i]}</td>
+									<td>${userTimesBest[i]}</td>
+								</tr>
+							`
+						}
+
+						level = 0 // reset to level 0
+
+						document.querySelector(".total").innerHTML = total.toFixed(2)
+					} else {
+						document.querySelector(".win").removeAttribute("hidden")
+					}
+				}
+
+				const minAlpha = 0.8
+				const stepAlpha = 0.01
+				let ignoreNextResize = false
+				let userTimes = [] // stores user times
+				let userTimesBest = []
+
+				function resize (box) {
+					if (ignoreNextResize) {
+						ignoreNextResize = false
+						return
+					}
+					zoom = calculateZoom() // recalculate zoom
+					// console.log($canvas.getBoundingClientRect().width, window.innerWidth)
+					if (box.width > window.innerWidth) {
+						// debugger
+						$canvas.setAttribute("wide", "")
+						ignoreNextResize = true
+					} else {
+						$canvas.removeAttribute("wide")
+					}
+				}
+
+				let wW, wH
+
+				const frame = () => {
+					const box = $canvas.getBoundingClientRect()
+					if (wW !== box.width || wH !== box.height) {
+						wW = box.width
+						wH = box.height
+						resize(box)
+					}
+
+					// GLOBAL_DISABLE_SOUND = !document.query	Selector(`input[name="sound"]`).checked
+
+					if (!paused) {
+						// quick clear canvas
+						$canvas.width = $canvas.width
+						$canvas.height = $canvas.height
+
+						if (plotMode) {
+							ctx.strokeStyle="white"
+							ctx.lineWidth = 1
+							// for (let x = 0; x < $canvas.width; x += PLOT_MODE_RES) {
+							// 	for (let y = 0; y < $canvas.height; y += PLOT_MODE_RES) {
+							// 		// console.log(x,y)
+							// 		ctx.beginPath()
+							// 		ctx.moveTo(x, y)
+							// 		ctx.lineTo($canvas.width, $canvas.height)
+							// 		ctx.stroke()
+							// 	}
+							// }
+
+
+							for (let x = 0; x <= $canvas.width; x += PLOT_MODE_RES) {
+								ctx.beginPath()
+								ctx.moveTo(x, 0)
+								ctx.lineTo(x, $canvas.height)
+								ctx.stroke()
+							}
+
+							for (let y = 0; y <= $canvas.height; y += PLOT_MODE_RES) {
+								ctx.beginPath()
+								ctx.moveTo(0, y)
+								ctx.lineTo($canvas.width, y)
+								ctx.stroke()
+							}
+						}
+
+						rects.forEach((r) => {
+							if (r.d) {
+								r.a -= stepAlpha
+							} else {
+								r.a += stepAlpha
+							}
+
+							if (r.a <= minAlpha) {
+								r.a = minAlpha
+								r.d = false
+							}
+
+							if (r.a > 1) {
+								r.a = 1
+								r.d = true
+							}
+
+							ctx.fillStyle = `rgba(${r.r}, ${r.g}, ${r.b}, ${r.a})`
+							ctx.fillRect(r.x, r.y, size, size)
+						})
+
+						time = ((performance.now() - tStart) / 1000).toFixed(2)
+						ctx.fillStyle = "rgba(0, 0, 0, 0.5)"
+
+						if (plotMode) {
+							updateUIStat("time", 0)
+							updateUIStat("record", userTimesBest[level] || 0)
+						} else {
+							updateUIStat("time", time)
+							updateUIStat("record", userTimesBest[level] || time)
+						}
+						// ctx.font = "64px monospace"
+						// ctx.fillText(time, 0, 64)
+						// ctx.fillStyle = "white"
+						// ctx.fillText(time, 1, 65)
+
+						if (winConditionCheck()) {
+							win()
+						}
+					}
+
+					requestAnimationFrame(frame)
+				}
+
+				const WASTE_NO_MOVES = true
+
+				function move (ax, ay) {
+					// console.log(rects, ax, ay)
+					rects.forEach((r, i) => {
+						if (ax >= r.x && ax < r.x + size) {
+							if (ay >= r.y && ay < r.y + size) {
+								let triedUp = false
+								let triedDown = false
+								let triedLeft = false
+								let triedRight = false
+
+								let addedRect
+
+								while (!addedRect) {
+									let x = r.x
+									let y = r.y
+
+									function tryUp () {
+										triedUp = true
+										while (isRectHere(x,y)) { y -= size }
+									}
+
+									function tryDown () {
+										triedDown = true
+										while (isRectHere(x,y)) { y += size }
+									}
+
+									function tryLeft () {
+										triedLeft = true
+										while (isRectHere(x,y)) { x += size }
+									}
+
+									function tryRight () {
+										triedRight = true
+										while (isRectHere(x,y)) { x -= size }
+									}
+
+									switch (Math.floor(Math.random() * 4)) {
+										case 0: // down
+											// if (!tryDown) {
+												tryDown()
+												break
+											// }
+
+										case 1: // up
+											// if (!tryUp) {
+												tryUp()
+												break
+											// }
+
+										case 2: // left
+											// if (!tryLeft) {
+												tryLeft()
+												break
+											// }
+
+										case 3: // right
+											// if (!tryRight) {
+												tryRight()
+												break
+											// }
+									}
+
+									addedRect = newRect(x, y)
+
+									if (!addedRect && WASTE_NO_MOVES) {
+										// console.log("no rect added, we'll try a different direction")
+
+										// if we've tried all four directions, break
+										if (tryDown && tryLeft && tryRight && tryUp) {
+											break
+										}
+									}
+								}
+							}
+						}
+					})
+				}
+
+				// let zoom = parseInt(getComputedStyle($canvas).zoom) // TODO: re-process on zoom
+
+				let zoom
+				function calculateZoom (width) {
+					const box = $canvas.getBoundingClientRect()
+					const z = box.width / (width || $canvas.width)
+					console.log("new zoom width with", (width || $canvas.width), "is", z)
+					return z
+				}
+
+				function plotModeEvent (x, y) {
+					const startX = Math.floor(x / calculateZoom(levels[level].w))
+					const startY = Math.floor(y / calculateZoom(levels[level].w))
+
+					newRect(startX, startY)
+
+					// EXIT PLOT MODE
+					if (rects.length) { // only start the game if we populated a valid rect
+						plotMode = false
+						tStart = performance.now()
+						// enter real res+zoom
+						$canvas.width = levels[level].w
+						$canvas.height = levels[level].h
+						zoom = calculateZoom()
+					}
+				}
+
+				$canvas.addEventListener("touchstart", event => {
+					if (!plotMode) return
+					const t = event.touches[0]
+					const box = $canvas.getBoundingClientRect()
+					const offsetX = t.clientX - box.left
+					const offsetY = t.clientY - box.top
+					plotModeEvent(offsetX, offsetY)
+				})
+
+				$canvas.addEventListener("touchmove", event => {
+					event.preventDefault()
+					if (plotMode) return
+					const box = $canvas.getBoundingClientRect()
+					Array.from(event.touches).forEach(t => {
+						const offsetX = Math.floor((t.clientX - box.left) / zoom)
+						const offsetY = Math.floor((t.clientY - box.top) / zoom)
+						console.log(offsetX, offsetY)
+
+						move(offsetX, offsetY)
+					})
+				})
+
+				$canvas.addEventListener("click", event => {
+					if (!plotMode) return
+					plotModeEvent(event.offsetX, event.offsetY)
+				})
+
+				$canvas.addEventListener("mousemove", (event) => {
+					if (plotMode) return
+					// console.log(Math.floor(event.offsetX), Math.floor(event.offsetY))
+					move(Math.floor(event.offsetX / zoom), Math.floor(event.offsetY / zoom))
+				})
+
+				const init = () => {
+					plotMode = true // start in plot mode
+					updateUIStat("level", (level + 1) + " // " + levels[level].w + "x" + levels[level].h + "")
+					rects = []
+					paused = false
+					updateSquareStats()
+
+					// enter plot mode res+zoom
+					$canvas.width = levels[level].w * PLOT_MODE_RES
+					$canvas.height = levels[level].h * PLOT_MODE_RES
+					console.log("enter plot mode", $canvas.width, $canvas.height)
+					zoom = 1
+
+					// const startX = Math.floor(($canvas.width / 2) - size / 2)
+					// const startY = Math.floor(($canvas.height / 2) - size / 2)
+
+					// alert(`try start rect`)
+					// newRect(startX, startY)
+					// alert(`rect started`)
+
+					// firstX = startX
+					// firstY = startY
+
+					// while (firstX > 0) firstX -= size
+					// while (firstY > 0) firstY -= size
+
+					console.log(firstX, firstY)
+				}
+
+				function startGame () {
+					paused = false
+					document.querySelector(".menu").setAttribute("hidden", "")
+					document.querySelector(".game-end").setAttribute("hidden", "")
+					init()
+				}
+
+				const $btn = document.querySelector(".start")
+				$btn.addEventListener("click", () => {
+					startGame()
+				})
+
+				document.querySelectorAll(".anew").forEach($a => $a.addEventListener("click", () => {
+					console.log("CLICKED")
+					// if (!level || (level && confirm("Starting a new game will delete your current game. Is this okay?\n\n(this will not affect your record score)"))) {
+						level = 0
+						startGame()
+					// }
+				}))
+
+				document.querySelector(".win__replay").addEventListener("click", function () {
+					document.querySelector(".win").setAttribute("hidden", "")
+
+					init() // re init on new level
+				})
+
+				document.querySelector(".win__next").addEventListener("click", function () {
+					document.querySelector(".win").setAttribute("hidden", "")
+
+					level++
+					init() // re init on new level
+				})
+
+
+				let deferredPrompt;
+				const $a2hs = document.querySelector(".a2hs")
+
+				window.addEventListener('beforeinstallprompt', (e) => {
+					// Prevent Chrome 67 and earlier from automatically showing the prompt
+					e.preventDefault();
+					// Stash the event so it can be triggered later.
+					deferredPrompt = e;
+					$a2hs.removeAttribute("hidden")
+				});
+
+				$a2hs.addEventListener("click", () => {
+					// hide our user interface that shows our A2HS button
+					btnAdd.style.display = 'none';
+					$a2hs.setAttribute("hidden", "")
+					// Show the prompt
+					deferredPrompt.prompt();
+					// Wait for the user to respond to the prompt
+					deferredPrompt.userChoice.then((choiceResult) => {
+						if (choiceResult.outcome === 'accepted') {
+							console.log('User accepted the A2HS prompt');
+						} else {
+							console.log('User dismissed the A2HS prompt');
+						}
+						deferredPrompt = null;
+					});
+				})
+
+				const dataMap = {
+					"version": "1",
+					"sound": '> document.querySelector(`input[name="sound"]`).checked',
+					"level": "> level",
+					"userTimes": "> userTimes",
+					"userTimesBest": "> userTimesBest",
+				}
+
+				let DISABLE_SAVING
+				function clearSaveGameData () {
+					localStorage.clear()
+					DISABLE_SAVING = true
+					console.warn("Save data is cleared. PLEASE RELOAD THE PAGE. New data will not be written until the page is reloaded!")
+					// window.location.reload()
+				}
+				window.clearSaveGameData = clearSaveGameData
+
+				function saveGameData () {
+					if (!DISABLE_SAVING) {
+						const data = {}
+						Object.keys(dataMap).forEach(key => {
+							if (dataMap[key].substr(0,1) === ">") {
+								data[key] = JSON.stringify(eval(dataMap[key].substr(1).trim()))
+							} else {
+								data[key] = dataMap[key]
+							}
+						})
+						localStorage.gameData = JSON.stringify(data)
+						requestAnimationFrame(saveGameData)
+					}
+				}
+
+				function loadGameData () {
+					if (localStorage.gameData) {
+						const parsed = JSON.parse(localStorage.gameData)
+						Object.keys(dataMap).forEach(key => {
+							if (typeof parsed[key] === "undefined") {
+								console.error("WARNING! Local data does not have key " + key + ". In the future this will throw an exception.")
+								return
+							}
+
+							if (dataMap[key].substr(0,1) === ">") {
+								const evaluate = dataMap[key].substr(1).trim() + "=" + parsed[key]
+								console.log(evaluate)
+								eval(evaluate)
+							}
+						})
+					}
+				}
+
+				requestAnimationFrame(frame)
+
+				loadGameData() // load before requesting frames to save
+				requestAnimationFrame(saveGameData)
+				// alert("okay 1")
+
+				if (level) $btn.removeAttribute("hidden")
+				$btn.innerHTML += " from level " + (level + 1)
+			} catch (ex) {
+				alert("fatal error\n\n" + ex.toString() + "\n\n" + ex.message + "\n-> " + ex.line + "\n\n(update your browser.)")
+				throw ex
+			}
+		}())
+		</script>
+		<script>
+			if ("UpUp" in window) UpUp.start({"content-url": "/index.html"})
+		</script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-132387098-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-132387098-1');
+</script>
+
+	</body>
+</html>
