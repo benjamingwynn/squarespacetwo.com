@@ -609,6 +609,8 @@
 					}
 				}
 
+				window.cheat = win
+
 				const minAlpha = 0.8
 				const stepAlpha = 0.01
 				let ignoreNextResize = false
@@ -828,27 +830,29 @@
 					}
 				}
 
-				$canvas.addEventListener("touchstart", event => {
-					if (!plotMode) return
+				const plot =  event => {
+					event.preventDefault()
 					const t = event.touches[0]
 					const box = $canvas.getBoundingClientRect()
 					const offsetX = t.clientX - box.left
 					const offsetY = t.clientY - box.top
 					plotModeEvent(offsetX, offsetY)
-				})
+				}
 
-				$canvas.addEventListener("touchmove", event => {
+				const onmove = event => {
 					event.preventDefault()
 					if (plotMode) return
 					const box = $canvas.getBoundingClientRect()
 					Array.from(event.touches).forEach(t => {
 						const offsetX = Math.floor((t.clientX - box.left) / zoom)
 						const offsetY = Math.floor((t.clientY - box.top) / zoom)
-						console.log(offsetX, offsetY)
-
+						
 						move(offsetX, offsetY)
 					})
-				})
+				}
+
+				$canvas.addEventListener("touchstart", (event) => plotMode ? plot(event) : onmove(event))
+				$canvas.addEventListener("touchmove", onmove)
 
 				$canvas.addEventListener("click", event => {
 					if (!plotMode) return
