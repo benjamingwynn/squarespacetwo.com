@@ -726,81 +726,53 @@
 				const WASTE_NO_MOVES = true
 
 				function move (ax, ay) {
-					// console.log(rects, ax, ay)
-					rects.forEach((r, i) => {
-						if (ax >= r.x && ax < r.x + size) {
-							if (ay >= r.y && ay < r.y + size) {
-								let triedUp = false
-								let triedDown = false
-								let triedLeft = false
-								let triedRight = false
+					for (let i = 0; i < rects.length; i++) {
+						const r = rects[i]
+						if (ax >= r.x && ax < r.x + size && ay >= r.y && ay < r.y + size) {
+							let triedUp = false, triedDown = false, triedLeft = false, triedRight = false
+							let addedRect = false
 
-								let addedRect
+							while (!addedRect) {
+								let x = r.x, y = r.y
 
-								while (!addedRect) {
-									let x = r.x
-									let y = r.y
+								function tryUp () {
+									triedUp = true
+									while (isRectHere(x,y)) { y -= size }
+								}
 
-									function tryUp () {
-										triedUp = true
-										while (isRectHere(x,y)) { y -= size }
-									}
+								function tryDown () {
+									triedDown = true
+									while (isRectHere(x,y)) { y += size }
+								}
 
-									function tryDown () {
-										triedDown = true
-										while (isRectHere(x,y)) { y += size }
-									}
+								function tryLeft () {
+									triedLeft = true
+									while (isRectHere(x,y)) { x += size }
+								}
 
-									function tryLeft () {
-										triedLeft = true
-										while (isRectHere(x,y)) { x += size }
-									}
+								function tryRight () {
+									triedRight = true
+									while (isRectHere(x,y)) { x -= size }
+								}
 
-									function tryRight () {
-										triedRight = true
-										while (isRectHere(x,y)) { x -= size }
-									}
+								switch (Math.floor(Math.random() * 4)) {
+									case 0: tryDown(); break
+									case 1: tryUp(); break
+									case 2: tryLeft(); break
+									case 3: tryRight(); break
+								}
 
-									switch (Math.floor(Math.random() * 4)) {
-										case 0: // down
-											// if (!tryDown) {
-												tryDown()
-												break
-											// }
+								addedRect = newRect(x, y)
 
-										case 1: // up
-											// if (!tryUp) {
-												tryUp()
-												break
-											// }
-
-										case 2: // left
-											// if (!tryLeft) {
-												tryLeft()
-												break
-											// }
-
-										case 3: // right
-											// if (!tryRight) {
-												tryRight()
-												break
-											// }
-									}
-
-									addedRect = newRect(x, y)
-
-									if (!addedRect && WASTE_NO_MOVES) {
-										// console.log("no rect added, we'll try a different direction")
-
-										// if we've tried all four directions, break
-										if (tryDown && tryLeft && tryRight && tryUp) {
-											break
-										}
+								if (!addedRect && WASTE_NO_MOVES) {
+									// if we've tried all four directions, break
+									if (triedDown && triedLeft && triedRight && triedUp) {
+										break
 									}
 								}
 							}
 						}
-					})
+					}
 				}
 
 				// let zoom = parseInt(getComputedStyle($canvas).zoom) // TODO: re-process on zoom
@@ -846,7 +818,7 @@
 					Array.from(event.touches).forEach(t => {
 						const offsetX = Math.floor((t.clientX - box.left) / zoom)
 						const offsetY = Math.floor((t.clientY - box.top) / zoom)
-						
+
 						move(offsetX, offsetY)
 					})
 				}
