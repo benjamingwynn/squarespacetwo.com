@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="s q u a r e s p a c e t w o"/>
 		<meta name="" content=""/>
-		<meta property="og:image" content="/512x512.png">
+		<meta property="og:image" content="/favicon.png">
 		<meta name="theme-color" content="#000000">
 		<!-- <script src="/audiocontext.js"></script> -->
 		<script src="https://cwilso.github.io/webkitAudioContext-MonkeyPatch/webkitAudioContextMonkeyPatch.js"></script>
@@ -18,7 +18,7 @@
 		<meta content="yes" name="apple-touch-fullscreen" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-		<link rel="icon" type="image/png" href="/512x512.png" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
 
 		<style>
 			* {
@@ -228,6 +228,22 @@
 
 			}
 
+
+			.high-score, .new-high-score {
+				animation: highscore 0.8s both alternate infinite;
+				text-align: center;
+			}
+
+			@keyframes highscore {
+				from {
+					transform: scale(1.1);
+					color: pink;
+				}
+				to {
+					color: greenyellow;
+					transform: scaleX(0.7) scaleY(0.9)
+				}
+			}
 		</style>
 	</head>
 	<body>
@@ -235,6 +251,7 @@
 
 		<div class="menu">
 			<h1>squarespacetwo</h1>
+			<small class="beep-boop">beep boop</small>
 
 			<div class="buttons">
 				<button class="start" type="button" hidden>continue</button>
@@ -242,16 +259,22 @@
 				<button class="a2hs" type="button" hidden>add to homescreen</button>
 			</div>
 
+			<div class="scores">
+				<table>
+				</table>
+			</div>
+
+			<h3 class="high-score"></h3>
+
 			<label>
 				<input type="checkbox" name="sound" id="sound" checked />
-					<div class="sound-icon">
-						<svg class="sound-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><path d="M256 88.017v335.964c0 21.438-25.943 31.998-40.971 16.971L126.059 352H24c-13.255 0-24-10.745-24-24V184c0-13.255 10.745-24 24-24h102.059l88.971-88.954c15.01-15.01 40.97-4.49 40.97 16.971z"/></svg>
-						<div class="sound-wave"></div>
-					</div>
+				<div class="sound-icon">
+					<svg class="sound-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><path d="M256 88.017v335.964c0 21.438-25.943 31.998-40.971 16.971L126.059 352H24c-13.255 0-24-10.745-24-24V184c0-13.255 10.745-24 24-24h102.059l88.971-88.954c15.01-15.01 40.97-4.49 40.97 16.971z"/></svg>
+					<div class="sound-wave"></div>
+				</div>
 			</label>
 
-			<small>written by <a href="http://xenxier.com" target="noopener">benjamin gwynn</a> 2019</small>
-
+			<small>made by <a href="https://benjamingwynn.com">benjamin gwynn</a></small>
 		</div>
 		<div class="game-area">
 			<canvas></canvas>
@@ -287,8 +310,17 @@
 
 			</table>
 			<div class="total">${total}</div>
+			<h3 class="new-high-score"></h3>
+
 			<button class="anew" type="button">new game</button>
 		</div>
+		<script>
+			const beep = document.body.querySelector('.beep-boop')
+			const boops = ['beep', 'boop']
+			setInterval(() => {
+				beep.textContent = Array.from({length: Math.random() < 0.3 ? 4: 3}).map(()=>boops[Math.floor(Math.random() * boops.length )]).join(' ');
+			}, 1000)
+		</script>
 		<style>
 			.game-end {
 				position: fixed;
@@ -452,6 +484,15 @@
 				margin: 0.4em 0;
 				color: lightyellow;
 			}
+
+			.menu table {
+				font-size: 0.8em;
+				margin-bottom: 1rem;
+			}
+
+			table td:not(:first-of-type):not(:last-of-type), table th:not(:first-of-type):not(:last-of-type) {
+				padding: 0 1em;
+			}
 		</style>
 		<script>
 		(function () {
@@ -589,21 +630,31 @@
 									<th>Best</th>
 								</tr>
 						`
+						let allBest = true;
 						for (let i = 0; i < levels.length; i++) {
-							total += parseFloat(userTimes[i])
+							total += parseFloat(userTimes[i]??0)
+							if (userTimes[i] != userTimesBest[i]) {
+								allBest = false;
+							}
 							$table.innerHTML += `
 								<tr>
 									<td>${i + 1}</td>
 									<td>${levels[i].w} x ${levels[i].h}</td>
 									<td>${userTimes[i]}</td>
-									<td>${userTimesBest[i]}</td>
+									<td>${userTimesBest[i] ?? '-'}</td>
 								</tr>
 							`
 						}
 
+						if (allBest) {
+							document.querySelector('.new-high-score').textContent='New high score!'
+						} else {
+							document.querySelector('.new-high-score').textContent=''
+						}
+
 						level = 0 // reset to level 0
 
-						document.querySelector(".total").innerHTML = total.toFixed(2)
+						document.querySelector(".total").innerHTML = "total " + total.toFixed(2) + 's'
 					} else {
 						document.querySelector(".win").removeAttribute("hidden")
 					}
@@ -975,6 +1026,36 @@
 								eval(evaluate)
 							}
 						})
+
+							// show high scores
+
+						const $table = document.querySelector(".menu table")
+
+						let total = 0
+						$table.innerHTML = `
+							<tr>
+								<th>Level #</th>
+								<th>Size</th>
+								<th>Best</th>
+							</tr>
+						`
+						for (let i = 0; i < levels.length; i++) {
+							if (userTimesBest[i] && total!==null) {
+								total += parseFloat(userTimesBest[i])
+							} else {
+								total = null;
+							}
+							$table.innerHTML += `
+								<tr>
+									<td>${i + 1}</td>
+									<td>${levels[i].w} x ${levels[i].h}</td>
+									<td>${userTimesBest[i] ?? '-'}</td>
+								</tr>
+							`
+						}
+						if (total !== null) {
+							document.querySelector('.menu .high-score').textContent = `HIGH SCORE = ${total.toFixed(2)} seconds`
+						}
 					}
 				}
 
