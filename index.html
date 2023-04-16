@@ -608,11 +608,7 @@
 					makeWinNoise()
 					paused = true
 
-					if (userTimesBest[level]) {
-						if (userTimesBest[level] > time) {
-							userTimesBest[level] = time
-						}
-					} else {
+					if (!userTimesBest[level] || time < userTimesBest[level]) {
 						userTimesBest[level] = time
 					}
 
@@ -667,8 +663,8 @@
 				const minAlpha = 0.8
 				const stepAlpha = 0.01
 				let ignoreNextResize = false
-				let userTimes = [] // stores user times
-				let userTimesBest = []
+				var userTimes = [] // stores user times
+				var userTimesBest = []
 
 				function resize (box) {
 					if (ignoreNextResize) {
@@ -1016,6 +1012,7 @@
 				function loadGameData () {
 					if (localStorage.gameData) {
 						const parsed = JSON.parse(localStorage.gameData)
+						if (parsed.userTimesBest) parsed.userTimesBest = parsed.userTimesBest.map(x => parseInt(x))
 						Object.keys(dataMap).forEach(key => {
 							if (typeof parsed[key] === "undefined") {
 								console.error("WARNING! Local data does not have key " + key + ". In the future this will throw an exception.")
