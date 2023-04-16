@@ -1012,7 +1012,6 @@
 				function loadGameData () {
 					if (localStorage.gameData) {
 						const parsed = JSON.parse(localStorage.gameData)
-						if (parsed.userTimesBest) parsed.userTimesBest = parsed.userTimesBest.map(x => parseInt(x))
 						Object.keys(dataMap).forEach(key => {
 							if (typeof parsed[key] === "undefined") {
 								console.error("WARNING! Local data does not have key " + key + ". In the future this will throw an exception.")
@@ -1025,6 +1024,8 @@
 								eval(evaluate)
 							}
 						})
+						// fix stringed best user times
+						userTimesBest = userTimesBest.map(x => parseInt(x))
 
 							// show high scores
 
